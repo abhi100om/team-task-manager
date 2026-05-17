@@ -59,6 +59,16 @@ function Login() {
         >
           Login
         </button>
+
+        <p className="text-center mt-4">
+          Don't have an account?{" "}
+          <a
+            href="/signup"
+            className="text-blue-600 font-semibold"
+          >
+            Signup
+          </a>
+        </p>
       </form>
     </div>
   );
