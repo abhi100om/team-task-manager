@@ -22,8 +22,12 @@ function Signup() {
       await API.post("/auth/signup", form);
 
       alert("Signup Successful");
+
+      window.location.href = "/";
     } catch (err) {
-      alert(err.response.data.message);
+      alert(
+        err.response?.data?.message || "Signup failed"
+      );
     }
   };
 
@@ -43,6 +47,7 @@ function Signup() {
           placeholder="Name"
           className="w-full border p-3 rounded mb-4"
           onChange={handleChange}
+          required
         />
 
         <input
@@ -51,6 +56,7 @@ function Signup() {
           placeholder="Email"
           className="w-full border p-3 rounded mb-4"
           onChange={handleChange}
+          required
         />
 
         <input
@@ -59,6 +65,7 @@ function Signup() {
           placeholder="Password"
           className="w-full border p-3 rounded mb-4"
           onChange={handleChange}
+          required
         />
 
         <button
@@ -66,6 +73,16 @@ function Signup() {
         >
           Signup
         </button>
+
+        <p className="text-center mt-4">
+          Already have an account?{" "}
+          <a
+            href="/"
+            className="text-blue-600 font-semibold"
+          >
+            Login
+          </a>
+        </p>
       </form>
     </div>
   );
