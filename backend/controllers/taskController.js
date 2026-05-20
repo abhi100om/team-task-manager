@@ -12,7 +12,9 @@ exports.createTask = async (req, res) => {
     } = req.body;
 
     const project = await prisma.project.findUnique({
-      where: { id: projectId },
+      where: {
+        id: projectId,
+      },
     });
 
     if (!project) {
@@ -33,7 +35,7 @@ exports.createTask = async (req, res) => {
         description,
         dueDate: new Date(dueDate),
         priority,
-        assignedToId,
+        assignedToId: parseInt(assignedToId),
         projectId,
         createdById: req.user.id,
       },
@@ -70,10 +72,11 @@ exports.getProjectTasks = async (req, res) => {
 
         ...(req.user.role === "member"
           ? {
-            assignedToId: req.user.id,
-          }
+              assignedToId: req.user.id,
+            }
           : {}),
       },
+
       include: {
         assignedTo: {
           select: {
@@ -82,6 +85,10 @@ exports.getProjectTasks = async (req, res) => {
             email: true,
           },
         },
+      },
+
+      orderBy: {
+        dueDate: "asc",
       },
     });
 
@@ -95,12 +102,15 @@ exports.getProjectTasks = async (req, res) => {
 
 exports.updateTask = async (req, res) => {
   try {
-    const taskId = req.params.id;
+    const taskId = parseInt(req.params.id);
 
     const { status } = req.body;
 
     const task = await prisma.task.findUnique({
-      where: { id: taskId },
+      where: {
+        id: taskId,
+      },
+
       include: {
         project: true,
       },
@@ -128,6 +138,7 @@ exports.updateTask = async (req, res) => {
       where: {
         id: taskId,
       },
+
       data: {
         status,
       },
@@ -143,10 +154,13 @@ exports.updateTask = async (req, res) => {
 
 exports.deleteTask = async (req, res) => {
   try {
-    const taskId = req.params.id;
+    const taskId = parseInt(req.params.id);
 
     const task = await prisma.task.findUnique({
-      where: { id: taskId },
+      where: {
+        id: taskId,
+      },
+
       include: {
         project: true,
       },
@@ -171,7 +185,7 @@ exports.deleteTask = async (req, res) => {
     });
 
     res.json({
-      message: "Task deleted",
+      message: "Task deleted successfully",
     });
   } catch (err) {
     res.status(500).json({
