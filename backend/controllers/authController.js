@@ -26,7 +26,6 @@ exports.signup = async (req, res) => {
         role: "admin",
       },
     });
-
     res.status(201).json({
       message: "User created successfully",
       user,
