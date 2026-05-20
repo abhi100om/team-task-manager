@@ -26,6 +26,7 @@ exports.signup = async (req, res) => {
         role: "admin",
       },
     });
+
     res.status(201).json({
       message: "User created successfully",
       user,
@@ -66,6 +67,7 @@ exports.login = async (req, res) => {
       {
         id: user.id,
         email: user.email,
+        role: user.role,
       },
       process.env.JWT_SECRET,
       {
@@ -75,6 +77,7 @@ exports.login = async (req, res) => {
 
     res.json({
       token,
+      role: user.role,
       user,
     });
   } catch (err) {
