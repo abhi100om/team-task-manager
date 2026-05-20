@@ -86,3 +86,39 @@ exports.login = async (req, res) => {
     });
   }
 };
+
+exports.createMember = async (req, res) => {
+  try {
+    const { name, email, password } = req.body;
+
+    const existingUser = await prisma.user.findUnique({
+      where: { email },
+    });
+
+    if (existingUser) {
+      return res.status(400).json({
+        message: "User already exists",
+      });
+    }
+
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    const member = await prisma.user.create({
+      data: {
+        name,
+        email,
+        password: hashedPassword,
+        role: "member",
+      },
+    });
+
+    res.status(201).json({
+      message: "Member created successfully",
+      member,
+    });
+  } catch (err) {
+    res.status(500).json({
+      message: err.message,
+    });
+  }
+};
