@@ -18,7 +18,7 @@ router.post(
   adminMiddleware,
   authController.createMember
 );
-
+ 
 router.get(
   "/members",
   authMiddleware,
