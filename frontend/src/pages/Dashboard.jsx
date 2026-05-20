@@ -16,6 +16,8 @@ function Dashboard() {
 
   const [projects, setProjects] = useState([]);
 
+  const [members, setMembers] = useState([]);
+
   const [tasks, setTasks] = useState([]);
 
   const [selectedProject, setSelectedProject] =
@@ -31,6 +33,7 @@ function Dashboard() {
     description: "",
     dueDate: "",
     priority: "MEDIUM",
+    assignedToId: "",
   });
 
   const [memberForm, setMemberForm] = useState({
@@ -70,6 +73,23 @@ function Dashboard() {
     }
   };
 
+  const fetchMembers = async () => {
+    try {
+      const res = await API.get(
+        "/auth/members",
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      setMembers(res.data);
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
   const fetchTasks = async (projectId) => {
     try {
       const res = await API.get(
@@ -93,6 +113,8 @@ function Dashboard() {
     fetchProjects();
 
     fetchStats();
+
+    fetchMembers();
   }, []);
 
   const handleChange = (e) => {
@@ -148,9 +170,6 @@ function Dashboard() {
         {
           ...taskForm,
           projectId: selectedProject,
-          assignedToId: JSON.parse(
-            atob(token.split(".")[1])
-          ).id,
         },
         {
           headers: {
@@ -166,6 +185,7 @@ function Dashboard() {
         description: "",
         dueDate: "",
         priority: "MEDIUM",
+        assignedToId: "",
       });
 
       fetchTasks(selectedProject);
@@ -195,6 +215,8 @@ function Dashboard() {
         email: "",
         password: "",
       });
+
+      fetchMembers();
     } catch (err) {
       alert(
         err.response?.data?.message ||
@@ -293,7 +315,7 @@ function Dashboard() {
           </div>
         </div>
 
-        {/* Admin Create Member */}
+        {/* Create Member */}
 
         {role === "admin" && (
           <div className="bg-white p-6 rounded-xl shadow mb-8">
@@ -453,6 +475,26 @@ function Dashboard() {
                 <option value="HIGH">HIGH</option>
               </select>
 
+              <select
+                name="assignedToId"
+                value={taskForm.assignedToId}
+                onChange={handleTaskChange}
+                className="w-full border p-3 rounded mb-4"
+              >
+                <option value="">
+                  Select Member
+                </option>
+
+                {members.map((member) => (
+                  <option
+                    key={member.id}
+                    value={member.id}
+                  >
+                    {member.name}
+                  </option>
+                ))}
+              </select>
+
               <button
                 className="bg-green-600 text-white px-6 py-3 rounded"
               >
@@ -475,6 +517,12 @@ function Dashboard() {
                   <p className="text-gray-600 mt-2">
                     {task.description}
                   </p>
+
+                  <div className="mt-2 text-sm text-gray-500">
+                    Assigned To:{" "}
+                    {task.assignedTo?.name ||
+                      "Unassigned"}
+                  </div>
 
                   <div className="mt-4">
                     <select
