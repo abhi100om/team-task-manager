@@ -235,8 +235,6 @@ function Dashboard() {
 
   return (
     <div className="min-h-screen bg-gray-100">
-      {/* Navbar */}
-
       <div className="bg-blue-600 text-white p-4 flex justify-between items-center">
         <h1 className="text-2xl font-bold">
           Team Task Manager
@@ -261,61 +259,42 @@ function Dashboard() {
           Dashboard
         </h2>
 
-        {/* Analytics */}
-
         <div className="grid md:grid-cols-5 gap-4 mb-8">
           <div className="bg-white p-6 rounded-xl shadow">
-            <h3 className="text-gray-500">
-              Total Tasks
-            </h3>
-
+            <h3>Total Tasks</h3>
             <p className="text-3xl font-bold">
               {stats.totalTasks}
             </p>
           </div>
 
           <div className="bg-white p-6 rounded-xl shadow">
-            <h3 className="text-gray-500">
-              Completed
-            </h3>
-
+            <h3>Completed</h3>
             <p className="text-3xl font-bold text-green-600">
               {stats.completed}
             </p>
           </div>
 
           <div className="bg-white p-6 rounded-xl shadow">
-            <h3 className="text-gray-500">
-              In Progress
-            </h3>
-
+            <h3>In Progress</h3>
             <p className="text-3xl font-bold text-yellow-600">
               {stats.inProgress}
             </p>
           </div>
 
           <div className="bg-white p-6 rounded-xl shadow">
-            <h3 className="text-gray-500">
-              Todo
-            </h3>
-
+            <h3>Todo</h3>
             <p className="text-3xl font-bold text-blue-600">
               {stats.todo}
             </p>
           </div>
 
           <div className="bg-white p-6 rounded-xl shadow">
-            <h3 className="text-gray-500">
-              Overdue
-            </h3>
-
+            <h3>Overdue</h3>
             <p className="text-3xl font-bold text-red-600">
               {stats.overdue}
             </p>
           </div>
         </div>
-
-        {/* Create Member */}
 
         {role === "admin" && (
           <div className="bg-white p-6 rounded-xl shadow mb-8">
@@ -359,8 +338,6 @@ function Dashboard() {
           </div>
         )}
 
-        {/* Create Project */}
-
         <form
           onSubmit={handleCreateProject}
           className="bg-white p-6 rounded-xl shadow mb-8"
@@ -386,14 +363,10 @@ function Dashboard() {
             className="w-full border p-3 rounded mb-4"
           />
 
-          <button
-            className="bg-blue-600 text-white px-6 py-3 rounded"
-          >
+          <button className="bg-blue-600 text-white px-6 py-3 rounded">
             Create Project
           </button>
         </form>
-
-        {/* Projects */}
 
         <div>
           <h3 className="text-2xl font-semibold mb-4">
@@ -421,15 +394,11 @@ function Dashboard() {
           </div>
         </div>
 
-        {/* Tasks */}
-
         {selectedProject && (
           <div className="mt-10">
             <h3 className="text-2xl font-semibold mb-4">
               Tasks
             </h3>
-
-            {/* Create Task */}
 
             <form
               onSubmit={handleCreateTask}
@@ -467,11 +436,9 @@ function Dashboard() {
                 className="w-full border p-3 rounded mb-4"
               >
                 <option value="LOW">LOW</option>
-
                 <option value="MEDIUM">
                   MEDIUM
                 </option>
-
                 <option value="HIGH">HIGH</option>
               </select>
 
@@ -495,14 +462,10 @@ function Dashboard() {
                 ))}
               </select>
 
-              <button
-                className="bg-green-600 text-white px-6 py-3 rounded"
-              >
+              <button className="bg-green-600 text-white px-6 py-3 rounded">
                 Create Task
               </button>
             </form>
-
-            {/* Tasks List */}
 
             <div className="grid md:grid-cols-2 gap-4">
               {tasks.map((task) => (
@@ -551,7 +514,14 @@ function Dashboard() {
                           console.log(err);
                         }
                       }}
-                      className="border px-3 py-2 rounded"
+                      className={`px-4 py-2 rounded text-white font-semibold ${
+                        task.status === "TODO"
+                          ? "bg-blue-500"
+                          : task.status ===
+                            "IN_PROGRESS"
+                          ? "bg-yellow-500"
+                          : "bg-green-600"
+                      }`}
                     >
                       <option value="TODO">
                         TODO
@@ -567,8 +537,17 @@ function Dashboard() {
                     </select>
                   </div>
 
-                  <div className="mt-3 text-sm text-gray-500">
-                    Priority: {task.priority}
+                  <div
+                    className={`mt-3 inline-block px-3 py-1 rounded-full text-white text-sm ${
+                      task.priority === "HIGH"
+                        ? "bg-red-500"
+                        : task.priority ===
+                          "MEDIUM"
+                        ? "bg-yellow-500"
+                        : "bg-green-500"
+                    }`}
+                  >
+                    {task.priority}
                   </div>
 
                   <div className="mt-2 text-sm text-gray-500">
@@ -577,6 +556,14 @@ function Dashboard() {
                       task.dueDate
                     ).toLocaleDateString()}
                   </div>
+
+                  {task.status !== "DONE" &&
+                    new Date(task.dueDate) <
+                      new Date() && (
+                      <div className="mt-3 text-red-600 font-bold">
+                        OVERDUE
+                      </div>
+                    )}
                 </div>
               ))}
             </div>
