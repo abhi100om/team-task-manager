@@ -122,3 +122,23 @@ exports.createMember = async (req, res) => {
     });
   }
 };
+exports.getMembers = async (req, res) => {
+  try {
+    const members = await prisma.user.findMany({
+      where: {
+        role: "member",
+      },
+      select: {
+        id: true,
+        name: true,
+        email: true,
+      },
+    });
+
+    res.json(members);
+  } catch (err) {
+    res.status(500).json({
+      message: err.message,
+    });
+  }
+};

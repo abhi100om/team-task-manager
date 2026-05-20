@@ -15,5 +15,10 @@ router.post(
   adminMiddleware,
   authController.createMember
 );
+router.get(
+  "/members",
+  authMiddleware,
+  authController.getMembers
+);
 
 module.exports = router;
