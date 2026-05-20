@@ -23,6 +23,7 @@ exports.signup = async (req, res) => {
         name,
         email,
         password: hashedPassword,
+        role: "admin",
       },
     });
 
