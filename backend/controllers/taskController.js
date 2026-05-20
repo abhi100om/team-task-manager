@@ -67,6 +67,12 @@ exports.getProjectTasks = async (req, res) => {
     const tasks = await prisma.task.findMany({
       where: {
         projectId,
+
+        ...(req.user.role === "member"
+          ? {
+            assignedToId: req.user.id,
+          }
+          : {}),
       },
       include: {
         assignedTo: {
