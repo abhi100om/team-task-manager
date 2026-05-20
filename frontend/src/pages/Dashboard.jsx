@@ -4,6 +4,8 @@ import API from "../services/api";
 function Dashboard() {
   const token = localStorage.getItem("token");
 
+  const role = localStorage.getItem("role");
+
   const [stats, setStats] = useState({
     totalTasks: 0,
     completed: 0,
@@ -29,6 +31,12 @@ function Dashboard() {
     description: "",
     dueDate: "",
     priority: "MEDIUM",
+  });
+
+  const [memberForm, setMemberForm] = useState({
+    name: "",
+    email: "",
+    password: "",
   });
 
   const fetchStats = async () => {
@@ -101,6 +109,13 @@ function Dashboard() {
     });
   };
 
+  const handleMemberChange = (e) => {
+    setMemberForm({
+      ...memberForm,
+      [e.target.name]: e.target.value,
+    });
+  };
+
   const handleCreateProject = async (e) => {
     e.preventDefault();
 
@@ -161,8 +176,37 @@ function Dashboard() {
     }
   };
 
+  const createMember = async () => {
+    try {
+      await API.post(
+        "/auth/create-member",
+        memberForm,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      alert("Member created successfully");
+
+      setMemberForm({
+        name: "",
+        email: "",
+        password: "",
+      });
+    } catch (err) {
+      alert(
+        err.response?.data?.message ||
+          "Failed to create member"
+      );
+    }
+  };
+
   const handleLogout = () => {
     localStorage.removeItem("token");
+
+    localStorage.removeItem("role");
 
     window.location.href = "/";
   };
@@ -176,12 +220,18 @@ function Dashboard() {
           Team Task Manager
         </h1>
 
-        <button
-          onClick={handleLogout}
-          className="bg-red-500 px-4 py-2 rounded"
-        >
-          Logout
-        </button>
+        <div className="flex items-center gap-4">
+          <span className="bg-white text-blue-600 px-4 py-1 rounded-full font-semibold">
+            {role?.toUpperCase()}
+          </span>
+
+          <button
+            onClick={handleLogout}
+            className="bg-red-500 px-4 py-2 rounded"
+          >
+            Logout
+          </button>
+        </div>
       </div>
 
       <div className="p-8">
@@ -242,6 +292,50 @@ function Dashboard() {
             </p>
           </div>
         </div>
+
+        {/* Admin Create Member */}
+
+        {role === "admin" && (
+          <div className="bg-white p-6 rounded-xl shadow mb-8">
+            <h3 className="text-2xl font-semibold mb-4">
+              Create Member
+            </h3>
+
+            <input
+              type="text"
+              name="name"
+              placeholder="Member Name"
+              value={memberForm.name}
+              onChange={handleMemberChange}
+              className="w-full border p-3 rounded mb-4"
+            />
+
+            <input
+              type="email"
+              name="email"
+              placeholder="Member Email"
+              value={memberForm.email}
+              onChange={handleMemberChange}
+              className="w-full border p-3 rounded mb-4"
+            />
+
+            <input
+              type="password"
+              name="password"
+              placeholder="Member Password"
+              value={memberForm.password}
+              onChange={handleMemberChange}
+              className="w-full border p-3 rounded mb-4"
+            />
+
+            <button
+              onClick={createMember}
+              className="bg-green-600 text-white px-6 py-3 rounded"
+            >
+              Create Member
+            </button>
+          </div>
+        )}
 
         {/* Create Project */}
 
